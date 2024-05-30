@@ -2,9 +2,10 @@ package be.kdg.infrastructure3.finalproject_backend;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
-@RequestMapping("/books")
+@RequestMapping("/api/books")
 public class BookAPIController {
     private final BookRepository bookRepository;
 
@@ -23,11 +24,16 @@ public class BookAPIController {
     }
 
     @PutMapping("/{id}")
-    public Book updateBook(@PathVariable Long id, @RequestBody Book bookDetails) {
-        Book book = bookRepository.findById(id).orElseThrow();
-        book.setTitle(bookDetails.getTitle());
-        book.setAuthor(bookDetails.getAuthor());
-        return bookRepository.save(book);
+    public Book updateBook(@PathVariable Long id, @RequestBody Book book) {
+        Optional<Book> optionalBook = bookRepository.findById(id);
+        if (optionalBook.isPresent()) {
+            Book existingBook = optionalBook.get();
+            existingBook.setTitle(book.getTitle());
+            existingBook.setAuthor(book.getAuthor());
+            return bookRepository.save(existingBook);
+        } else {
+            throw new RuntimeException("Book not found with id " + id);
+        }
     }
 
     @DeleteMapping("/{id}")
