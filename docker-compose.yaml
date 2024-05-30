@@ -1,0 +1,29 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:15.5
+    environment:
+      POSTGRES_DB: infrastructure
+      POSTGRES_USER: sysadmin
+      POSTGRES_PASSWORD: sysadmin
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sysadmin -d infrastructure"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  spring-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/infrastructure
+      SPRING_DATASOURCE_USERNAME: sysadmin
+      SPRING_DATASOURCE_PASSWORD: sysadmin
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
