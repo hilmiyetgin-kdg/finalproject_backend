@@ -13,8 +13,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    volumes:
-      - db-data:/var/lib/postgresql/data
+#    volumes:
+#      - db-data:/var/lib/postgresql/data
 
   spring-app:
     build:
@@ -30,5 +30,5 @@ services:
     ports:
       - "8080:8080"
 
-volumes:
-  db-data:
+#volumes:
+#  db-data:
